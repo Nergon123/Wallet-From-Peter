@@ -3,7 +3,7 @@ Unity Project
 ### Build or Installation project
 ##### Step 1:Download Unity 2019.3.13
 [Link](https://unity3d.com/unity/whats-new/2019.3.13)
-##### Step 2: Download this project via ZIP
+##### Step 2: Download this project as ZIP
 You may know how to do this
 ##### Step 3: Unpack this project to any folder
 Example: C:/Users/user/Documents/UnityProjects/WalletFromPeter/
