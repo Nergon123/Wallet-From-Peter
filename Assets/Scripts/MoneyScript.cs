@@ -26,6 +26,11 @@ public class MoneyScript : MonoBehaviour
     public Sprite[] sprites;
     public Scrollbar[] scrollbars;
     public InputField input;
+    public Text log;
+    public Text errorReset;
+    public Toggle resetLog;
+    public Toggle resetStats;
+    public RectTransform content;
     int type;
     /*
      * 0 - Медицина
@@ -55,12 +60,35 @@ public class MoneyScript : MonoBehaviour
     
     void YesRv(){
     	int a = 0;
-    	while (a<4) {
-    		moneys[a] = 0.0f;
-    		PlayerPrefs.SetFloat("moneys" + a.ToString(), 0.0f);
-    		a++;
-    	}
-    	RW.SetActive(false);
+        string status;
+        status = "";
+        if (resetStats.isOn == true)
+        {
+            while (a < 4)
+            {
+                moneys[a] = 0.0f;
+                PlayerPrefs.SetFloat("moneys" + a.ToString(), 0.0f);
+                a++;
+            }
+            status = status + "Статистика; ";
+        }
+        if (resetLog.isOn == true)
+        {
+            PlayerPrefs.DeleteKey("log");
+            status = status + " Події;";
+        }
+
+        PlayerPrefs.SetString("log", PlayerPrefs.GetString("log", "Початок подій \n") + System.DateTime.Now.ToString("[yyyy-MM-dd HH:mm:ss]") + " Скидування данних : " + status + " \n");
+
+
+        if (resetLog.isOn || resetStats.isOn == true)
+        {
+            RW.SetActive(false);
+        }
+        else
+        {
+            errorReset.text = "Помилка: хотя б один варіант має бути вибраним";
+        }
     	
     }
     void NoRv(){
@@ -76,7 +104,8 @@ public class MoneyScript : MonoBehaviour
     void Acceptv()
     {
     	
-        moneys[type] =moneys[type] + float.Parse(input.text,CultureInfo.InvariantCulture);
+        moneys[type] =moneys[type] + Convert.ToSingle(Math.Round(float.Parse(input.text,CultureInfo.InvariantCulture),2));
+        PlayerPrefs.SetString("log", PlayerPrefs.GetString("log", "Початок подій \n") + System.DateTime.Now.ToString("[yyyy-MM-dd HH:mm:ss]") + " Поповнення категорії " + strings[type] + " на " + input.text + " грн. \n" );
         input.text = "";
         DW.SetActive(false);
     }
@@ -110,13 +139,16 @@ public class MoneyScript : MonoBehaviour
     }
     private void Update()
     {
+        log.text = PlayerPrefs.GetString("log", "Ви ще нічого не робили)");
+        content.sizeDelta = new Vector2(0, (int)(((log.text.Length /21)* 45) + 164));
         float a = 0;
         int i = 0;
         while (i < 4)
         {
             a += moneys[i];
             
-            moneys[4] = a;
+            double b = Math.Round(a,2);
+            moneys[4] = Convert.ToSingle(b);
             i++;
         }
         texts[4].text = moneys[4].ToString() + " грн.";
